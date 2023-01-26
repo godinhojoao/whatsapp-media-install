@@ -5,5 +5,3 @@ export const handler = async(event: any) => {
     };
     return response;
 };
-
-console.log(handler({}))
