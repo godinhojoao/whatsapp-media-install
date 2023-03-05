@@ -3,10 +3,10 @@ name: Build, Test and Deploy
 on:
   push:
     branches:
-    - '**'
+      - "**"
   pull_request:
     branches:
-      - '**'
+      - "**"
 
 jobs:
   worker:
@@ -25,9 +25,23 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Lint
+        run: npm run lint
+
       - name: Run Tests
         run: npm run test
 
-    # - name: Deploy to production
-    #   if: contains(github.ref, 'main')
-    #   run: npx serverless deploy --stage prod --verbose
+      - name: Build
+        run: npm run build
+
+      - name: Serverless config
+        if: contains(github.ref, 'main')
+        run: |
+          npx serverless config credentials \
+            --provider aws \
+            --key ${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+
+      - name: Deploy to production
+        if: contains(github.ref, 'main')
+        run: npm run deploy
